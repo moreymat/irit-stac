@@ -31,9 +31,9 @@ def config_argparser(psr):
                      default=False, action="store_true",
                      help="only gather test data")
     psr.add_argument('--strip-mode',
-                    choices=['head', 'broadcast', 'custom'],
-                    default='head',
-                    help='CDUs stripping method')
+                     choices=['head', 'broadcast', 'custom'],
+                     default='head',
+                     help='CDUs stripping method')
     psr.set_defaults(func=main)
 
 
@@ -72,8 +72,8 @@ def extract_features(corpus, output_dir,
         cmd.extend(['--vocabulary', vocab_path])
     if strip_mode is not None:
         cmd.extend(['--strip-mode', strip_mode])
-    call(cmd)
-    call(cmd + ["--single"])
+    call(cmd)  # DEBUG
+    # call(cmd + ["--single"])  # DEBUG
 
 
 def main(args):

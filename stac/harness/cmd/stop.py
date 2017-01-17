@@ -6,10 +6,9 @@ stop any servers we have
 """
 
 from __future__ import print_function
-from attelo.harness.util import call
 import zmq
 
-from ..local import LEX_DIR, CORENLP_ADDRESS
+from ..local import CORENLP_ADDRESS
 
 NAME = 'stop'
 

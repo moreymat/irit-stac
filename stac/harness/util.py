@@ -12,8 +12,7 @@ import sys
 
 from attelo.harness.util import timestamp
 
-from .local import (HARNESS_NAME,
-                    LOCAL_TMP)
+from .local import HARNESS_NAME, LOCAL_TMP
 
 
 def current_tmp():

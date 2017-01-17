@@ -6,17 +6,13 @@ import six
 #                                    AstarDecoder,
 #                                    Heuristic,
 #                                    RfcConstraint)
-from attelo.decoding.baseline import (LastBaseline,
-                                      LocalBaseline)
-from attelo.harness.config import (EvaluationConfig,
-                                   LearnerConfig,
-                                   Keyed)
-from attelo.learning.oracle import (AttachOracle, LabelOracle)
+from attelo.decoding.baseline import LastBaseline, LocalBaseline
+from attelo.harness.config import EvaluationConfig, LearnerConfig, Keyed
+from attelo.learning.oracle import AttachOracle, LabelOracle
 from attelo.parser.attach import AttachClassifierWrapper
-from attelo.parser.full import (JointPipeline,
-                                PostlabelPipeline)
-from attelo.parser.label import (LabelClassifierWrapper, SimpleLabeller)
-from attelo.parser.pipeline import (Pipeline)
+from attelo.parser.full import JointPipeline, PostlabelPipeline
+from attelo.parser.label import LabelClassifierWrapper
+from attelo.parser.pipeline import Pipeline
 
 
 def combined_key(*variants):

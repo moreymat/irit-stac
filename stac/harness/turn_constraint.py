@@ -117,9 +117,13 @@ class TC_Pruner(Parser):
     in a parsing pipeline
     '''
     def fit(self, dpacks, targets, nonfixed_pairs=None, cache=None):
+        """Fit ; here, a no-op"""
         return self
 
     def transform(self, dpack, nonfixed_pairs=None):
+        """Restrict a DataPack to the pairs of EDUs that do not violate
+        the turn-constraint.
+        """
         return self.select(dpack, turn_constraint_safe(dpack))
 # pylint: enable=invalid-name
 
