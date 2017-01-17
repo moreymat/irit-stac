@@ -4,7 +4,7 @@ from __future__ import print_function
 import os
 import re
 import itertools as itr
-from os import path as fp
+
 import numpy as np
 from tempfile import mkdtemp
 from shutil import rmtree
@@ -13,7 +13,7 @@ from subprocess import call
 from attelo.table import UNRELATED
 from attelo.decoding import Decoder
 
-ZPL_TEMPLATE_DIR = fp.join(fp.dirname(__file__), 'ilp')
+ZPL_TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'ilp')
 
 # WIP seems to belong to stac.harness.local but...
 SCIP_BIN_DIR = os.path.abspath(os.path.join(
@@ -92,9 +92,10 @@ def dump_scores_to_dat_files(dpack, tgt_dir=None, prefix='default', decoded=Fals
         att_mat[pair_pos] = dpack.graph.attach
 
     with open(att_file, 'w') as f:
-        f.write('\n'.join(
-                    ':'.join(format_str.format(p)
-                    for p in row)
+        f.write(
+            '\n'.join(
+                ':'.join(format_str.format(p)
+                         for p in row)
                 for row in att_mat))
         f.write('\n')
 
@@ -110,10 +111,11 @@ def dump_scores_to_dat_files(dpack, tgt_dir=None, prefix='default', decoded=Fals
         lab_tsr[pair_pos] = dpack.graph.label
 
     with open(lab_file, 'w') as f:
-        f.write('\n'.join(
-                    ' '.join(
-                        ':'.join(format_str.format(p)
-                        for p in tube)
+        f.write(
+            '\n'.join(
+                ' '.join(
+                    ':'.join(format_str.format(p)
+                             for p in tube)
                     for tube in row)
                 for row in lab_tsr))
         f.write('\n')
@@ -137,8 +139,9 @@ def pretty_data(data):
         Inside a line, elements are separated by spaces
     """
     return '\n'.join(
-                ' '.join(str(e) for e in lis)
-            for lis in data)
+        ' '.join(str(e) for e in lis)
+        for lis in data)
+
 
 def mk_zimpl_input(dpack, data_dir):
     """ Create ZIMPL input files tuned to a datapack
@@ -179,7 +182,7 @@ def mk_zimpl_input(dpack, data_dir):
         # Appends 1 1 1 1, then 2 2 2, for turns of lengths 4 & 3 resp.
         edu_ind.extend(itr.repeat(i + 1, len(turn)))
 
-    data_path = fp.join(data_dir, 'turn.dat')
+    data_path = os.path.join(data_dir, 'turn.dat')
     with open(data_path, 'w') as f_data:
         print(pretty_data([turn_len, turn_off, edu_ind]), file=f_data)
 
@@ -208,13 +211,13 @@ def mk_zimpl_input(dpack, data_dir):
 
     for i, edu in enumerate(edus):
         for plast in current_last.values():
-            last_mat[plast][i] = 1;
+            last_mat[plast][i] = 1
         try:
             current_last[edu_speakers[edu]] = i
         except KeyError:
             pass
 
-    data_path = fp.join(data_dir, 'mlast.dat')
+    data_path = os.path.join(data_dir, 'mlast.dat')
     with open(data_path, 'w') as f_data:
         print(pretty_data(last_mat), file=f_data)
 
@@ -225,8 +228,8 @@ def mk_zimpl_input(dpack, data_dir):
         "param LABEL_COUNT := {0} ;".format(len(dpack.labels)),
     ))
 
-    template_path = fp.join(ZPL_TEMPLATE_DIR, 'template.zpl')
-    input_path = fp.join(data_dir, 'input.zpl')
+    template_path = os.path.join(ZPL_TEMPLATE_DIR, 'template.zpl')
+    input_path = os.path.join(data_dir, 'input.zpl')
 
     with open(template_path) as f_template:
         template = f_template.read()
@@ -256,7 +259,7 @@ def load_scip_output(dpack, output_path):
 
     def load_pairs():
         """ Convert SCIP output to attachment pairs """
-        r = re.compile('x#(\d+)#(\d+)#(\d+)')
+        r = re.compile(r'x#(\d+)#(\d+)#(\d+)')
         pairs = []
         labels = []
         t_flag = False
@@ -286,7 +289,7 @@ def load_scip_output(dpack, output_path):
     # Build indexes of attached pairs
     output_attach, output_labels = load_pairs()
     index_attached = pair_map[output_attach]
-    assert(len(output_labels) == len(index_attached))
+    assert len(output_labels) == len(index_attached)
 
     # Build labels
     unrelated = dpack.label_number(UNRELATED)
@@ -297,14 +300,31 @@ def load_scip_output(dpack, output_path):
 
 
 class ILPDecoder(Decoder):
-    """ Use ILP to generate constrained structures
+    """Use ILP to generate constrained structures.
 
-    Uses third-party tools (SCIP/ZIMPL)
+    Uses third-party tools (SCIP/ZIMPL).
 
-    See ZPL_TEMPLATE_DIR for constraint set description
+    See ZPL_TEMPLATE_DIR for constraint set description.
     """
 
     def decode(self, dpack, nonfixed_pairs=None):
+        """Predict edges on a DataPack.
+
+        Parameters
+        ----------
+        dpack : DataPack
+            DataPack
+
+        nonfixed_pairs : list of list of int, optional
+            List of pairs for which the decoder can make a decision wrt
+            a potential edge ; If None, the decoder is expected to make
+            a decision for every pair.
+
+        Returns
+        -------
+        dpack : DataPack
+            Modified version of the given DataPack.
+        """
         # TODO integrate nonfixed_pairs, maybe?
         tmpdir = mkdtemp()
 
@@ -313,8 +333,8 @@ class ILPDecoder(Decoder):
         input_path = mk_zimpl_input(dpack, tmpdir)
 
         # Run SCIP
-        param_path = fp.join(ZPL_TEMPLATE_DIR, 'scip.parameters')
-        output_path = fp.join(tmpdir, 'output.scip')
+        param_path = os.path.join(ZPL_TEMPLATE_DIR, 'scip.parameters')
+        output_path = os.path.join(tmpdir, 'output.scip')
         with open(output_path, 'w') as f_out:
             call([os.path.join(SCIP_BIN_DIR, 'scip'),
                   '-f', input_path,

@@ -66,11 +66,11 @@ def split_id(anno_id):
     local suffix
     """
     # WIP match a widespread format: doc_timestamp_anno
-    m = DOC_TIMESTAMP.match(anno_id)
-    if m is not None:
-        doc = m.group('doc_id')
-        subdoc = m.group('subdoc_id')
-        suffix = m.group('loc_id')
+    ts_match = DOC_TIMESTAMP.match(anno_id)
+    if ts_match is not None:
+        doc = ts_match.group('doc_id')
+        subdoc = ts_match.group('subdoc_id')
+        suffix = ts_match.group('loc_id')
     else:
         doc, subdoc, suffix = anno_id.split('_', 2)
     return ((doc, subdoc), suffix)

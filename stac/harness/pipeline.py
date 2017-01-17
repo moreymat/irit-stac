@@ -13,18 +13,14 @@ import sys
 
 from joblib import Parallel
 
-from attelo.harness import (RuntimeConfig)
-from attelo.harness.interface import (HarnessException)
+from attelo.harness import RuntimeConfig
 from attelo.harness.util import call, makedirs
-from attelo.io import (Torpor, load_multipack)
+from attelo.io import Torpor, load_multipack
 import attelo.harness.parse as ath_parse
 
-from .harness import (IritHarness)
-from .local import (EVALUATIONS,
-                    SNAPSHOTS,
-                    TEST_EVALUATION_KEY,
-                    TAGGER_JAR)
-from .util import (concat_i)
+from .harness import IritHarness
+from .local import SNAPSHOTS, TEST_EVALUATION_KEY, TAGGER_JAR
+from .util import concat_i
 
 # pylint: disable=too-few-public-methods
 

@@ -16,8 +16,7 @@ import sh
 
 from ..local import (CORENLP_SERVER_DIR, CORENLP_ADDRESS,
                      TAGGER_JAR, LEX_DIR,
-                     DIALOGUE_ACT_LEARNER,
-                     EVALUATIONS)
+                     DIALOGUE_ACT_LEARNER)
 from ..pipeline import\
     (StandaloneParser,
      Stage, run_pipeline,

@@ -18,7 +18,7 @@ from attelo.harness.config import (LearnerConfig,
 #                                    AstarDecoder,
 #                                    Heuristic,
 #                                    RfcConstraint)
-from attelo.decoding.baseline import (LocalBaseline)
+# from attelo.decoding.baseline import LocalBaseline
 from attelo.decoding.mst import (MstDecoder, MstRootStrategy)
 from attelo.learning.local import (SklearnAttachClassifier,
                                    SklearnLabelClassifier)
@@ -48,8 +48,7 @@ from .config.common import (ORACLE,
                             decoder_local,
                             mk_bypass,
                             # mk_joint,
-                            mk_post,
-                            )
+                            mk_post)
 
 from .ilp import (ILPDecoder, SCIP_BIN_DIR)
 from .turn_constraint import (tc_decoder,
@@ -67,7 +66,8 @@ SNAPSHOTS = 'data/SNAPSHOTS'
 """Results over time we are making a point of saving"""
 
 
-TRAINING_CORPUS = 'data/FROZEN/training-2015-05-30'
+# TRAINING_CORPUS = 'data/FROZEN/training-2015-05-30'
+TRAINING_CORPUS = 'data/pilot_spect'
 # TRAINING_CORPUS = 'data/tiny'
 """Corpora for use in building/training models and running our
 incremental experiments. Later on we should consider using the
@@ -81,7 +81,8 @@ is used in more than one corpus, but we can revisit this scheme as
 needed.
 """
 
-TEST_CORPUS = 'data/FROZEN/test-2015-05-30'
+# TEST_CORPUS = 'data/FROZEN/test-2015-05-30'
+TEST_CORPUS = 'data/TEST_spect'
 # TEST_CORPUS = None
 # TEST_CORPUS = 'tiny'
 """Corpora for use in FINAL testing.
@@ -116,8 +117,8 @@ ANNOTATORS = educe.stac.corpus.METAL_STR
 Which annotators to read from during feature extraction
 """
 
-# FIXED_FOLD_FILE = None
-FIXED_FOLD_FILE = 'folds-training-2015-05-30.json'
+FIXED_FOLD_FILE = None
+# FIXED_FOLD_FILE = 'folds-training-2015-05-30.json'
 """
 Set this to a file path if you *always* want to use it for your corpus
 folds. This is for long standing evaluation experiments; we want to
@@ -138,6 +139,7 @@ def decoder_mst():
 
 
 def decoder_ilp():
+    """ILP decoder"""
     return Keyed('ilp', ILPDecoder())
 
 

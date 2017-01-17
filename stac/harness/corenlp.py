@@ -16,7 +16,6 @@ import subprocess
 import sys
 
 import zmq
-import educe.stac
 from educe.stac.corenlp import turn_id_text, parsed_file_name
 
 
@@ -41,9 +40,8 @@ def _launch(config, status):
     to True to indicate that we have launched the server
     (but not necessarily that it is ready to receive anything)
     """
-    subprocess.Popen(["java", 
-                      "-jar",
-                      "target/corenlp-server-0.1.jar",
+    subprocess.Popen(["java",
+                      "-jar", "target/corenlp-server-0.1.jar",
                       "-ssplit.eolonly", "true"],
                      cwd=config.directory,
                      stdout=config.output)

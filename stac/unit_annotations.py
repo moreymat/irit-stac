@@ -7,7 +7,6 @@
 Learn and predict dialogue acts from EDU feature vectors
 """
 
-from os import path as fp
 import argparse
 import copy
 import os
@@ -21,7 +20,7 @@ from attelo.io import (load_labels,
 from educe.stac.annotation import set_addressees
 from educe.stac.context import Context
 from educe.stac.learning.addressee import guess_addressees_for_edu
-import educe.stac.learning.features as stac_features
+import educe.stac.learning.doc_vectorizer as stac_vectorizer
 import educe.stac
 from educe.stac.util.output import save_document
 
@@ -32,16 +31,26 @@ from educe.stac.util.output import save_document
 
 
 def learn_and_save(learner, feature_path, output_path):
-    '''
-    learn dialogue acts from an svmlight features file and dump
-    the model to disk
-    '''
+    """Learn dialogue acts from an svmlight features file and dump
+    the model to disk.
+
+    Parameters
+    ----------
+    learner : TODO
+        Learner.
+
+    feature_path : string
+        Path to the sparse feature file in the svmlight format.
+
+    output_path : string
+        Path to which the model will be dumped.
+    """
     # pylint: disable=unbalanced-tuple-unpacking
     data, target = load_svmlight_file(feature_path)
     # pylint: enable=unbalanced-tuple-unpacking
-    output_dir = fp.dirname(output_path)
+    output_dir = os.path.dirname(output_path)
     model = learner.fit(data, target)
-    if not fp.exists(output_dir):
+    if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     joblib.dump(model, output_path)
 
@@ -63,15 +72,27 @@ def _output_key(key):
 
 
 def get_edus_plus(inputs):
-    """Generate edus and extra environmental information for each
+    """Generate EDUs and extra environmental information for each EDU.
 
-    Currently:
+    Parameters
+    ----------
+    inputs : FeatureInput
+        Global information used for feature extraction.
 
-    * environment
-    * contexts
-    * edu
+    Yields
+    ------
+    env : DocEnv
+        Document environment (for feature extraction), for the next EDU.
+
+    contexts : educe.stac.context.Context
+        Context for the next EDU, i.e. essentially a collection of
+        pointers to the turn, tstar, turn_edus, dialogue,
+        dialogue_turns, doc_turns, tokens.
+
+    unit : educe.glozz.Unit
+        Next EDU in the designated set of documents.
     """
-    for env in stac_features.mk_envs(inputs, 'unannotated'):
+    for env in stac_vectorizer.mk_envs(inputs, 'unannotated'):
         doc = env.current.doc
         contexts = Context.for_edus(doc)
         for unit in doc.units:
@@ -80,15 +101,28 @@ def get_edus_plus(inputs):
 
 
 def extract_features(vocab, edus_plus):
-    """
-    Return a sparse matrix of features for all edus in the corpus
+    """Return a sparse matrix of features for all EDUs in the corpus.
+
+    Parameters
+    ----------
+    vocab : dict(string, int)
+        Feature vocabulary.
+
+    edus_plus : list((env, contexts, unit))
+        List of EDUs with the relevant context for feature extraction.
+
+    Returns
+    -------
+    matrix : scipy.sparse.csr_matrix
+        Feature matrix in the Compressed Sparse Row format.
     """
     matrix = lil_matrix((len(edus_plus), len(vocab)))
-    # this unfortunately duplicates stac_features.extract_single_features
+    # this unfortunately duplicates
+    # `educe.stac.learning.doc_vectorizer.extract_single_features()`
     # but it's the price we pay to ensure we get the edus and vectors in
     # the same order
     for row, (env, _, edu) in enumerate(edus_plus):
-        vec = stac_features.SingleEduKeys(env.inputs)
+        vec = stac_vectorizer.SingleEduKeys(env.inputs)
         vec.fill(env.current, edu)
         for feat, val in vec.one_hot_values_gen():
             if feat in vocab:
@@ -97,8 +131,24 @@ def extract_features(vocab, edus_plus):
 
 
 def annotate_edus(model, vocab, labels, inputs):
-    """
-    Annotate each EDU with its dialogue act and addressee
+    """Annotate each EDU with its dialogue act and addressee.
+
+    This modifies the EDUs in memory ; use `save_document` afterwards
+    to dump the modified annotations.
+
+    Parameters
+    ----------
+    model : TODO
+        TODO
+
+    vocab : dict(string, int)
+        Feature vocabulary.
+
+    labels : list of string
+        Array of labels.
+
+    inputs : FeatureInput
+        Global information for feature extraction.
     """
     edus_plus = list(get_edus_plus(inputs))
     feats = extract_features(vocab, edus_plus)
@@ -122,7 +172,7 @@ def command_annotate(args):
     args.parsing = True
     args.single = True
     args.strip_mode = 'head'  # FIXME should not be specified here
-    inputs = stac_features.read_corpus_inputs(args)
+    inputs = stac_vectorizer.read_corpus_inputs(args)
     model = joblib.load(args.model)
     vocab = {f: i for i, f in
              enumerate(load_vocab(args.vocabulary))}
