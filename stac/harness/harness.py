@@ -47,7 +47,7 @@ class IritHarness(Harness):
             exit_ungathered()
         eval_dir, scratch_dir = prepare_dirs(runcfg, data_dir)
         self.load(runcfg, eval_dir, scratch_dir)
-        evidence_of_gathered = self.mpack_paths(False)[0]
+        evidence_of_gathered = self.mpack_paths(False)['edu_input']
         if not fp.exists(evidence_of_gathered):
             exit_ungathered()
         evaluate_corpus(self)
@@ -116,12 +116,10 @@ class IritHarness(Harness):
 
     def _model_basename(self, rconf, mtype, ext):
         "Basic filename for a model"
-
         if 'attach' in mtype:
             rsubconf = rconf.attach
         else:
             rsubconf = rconf.label
-
         template = '{dataset}.{learner}.{task}.{ext}'
         return template.format(dataset=self.dataset,
                                learner=rsubconf.key,
@@ -129,12 +127,44 @@ class IritHarness(Harness):
                                ext=ext)
 
     def mpack_paths(self, test_data, stripped=False):
+        """Get paths for the files in the MultiPack.
+
+        Parameters
+        ----------
+        test_data : boolean
+            If True, require paths for the test section of the dataset ;
+            otherwise for the train section.
+
+        stripped : boolean, defaults to False
+            If True, TODO.
+
+        Returns
+        -------
+        file_paths : :obj:`dict` of (str, str or :obj:`repr` list of str)
+            Paths to the files of the MultiPack.
+        """
+        # FIXME catch-up with the new API in educe and attelo
+        # e.g. one group of files per corpus (split) vs per doc or
+        # dialogue
         ext = 'relations.sparse'
         core_path = self._eval_data_path(ext, test_data=test_data)
-        return (core_path + '.edu_input',
-                core_path + '.pairings',
-                (core_path + '.stripped') if stripped else core_path,
-                core_path + '.vocab')
+        # DEBUG
+        print(core_path)  # DEBUG
+        raise ValueError('debug in progress')
+        # end DEBUG
+        return {
+            # data files, might be one per corpus split or one per doc or
+            # dialogue
+            # FIXME values should be lists
+            'edu_input': core_path + '.edu_input',
+            'pairings': core_path + '.pairings',
+            'features': ((core_path + '.stripped') if stripped
+                                 else core_path),
+            # "global" files: vocabulary, labels (unique to a corpus or
+            # corpus split)
+            'vocab': core_path + '.vocab',
+            'labels': core_path + '.labels'  # FIXME probably
+        }
 
     def model_paths(self, rconf, fold, parser):
         """Paths to the learner(s) model(s).
