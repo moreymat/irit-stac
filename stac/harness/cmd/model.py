@@ -63,8 +63,9 @@ def _do_corpus(hconf):
     if not fp.exists(paths[0]):
         exit_ungathered()
     mpack = load_multipack(paths['edu_input'], paths['pairings'],
-                           paths['features'], paths['vocab'],
-                           paths['labels'],
+                           paths['features'],
+                           paths['vocab'], paths['labels'],
+                           file_split='corpus',  # WIP
                            verbose=True)
     dconf = DataConfig(pack=mpack,
                        folds=None)
