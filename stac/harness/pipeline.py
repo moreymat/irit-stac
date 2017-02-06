@@ -252,10 +252,12 @@ def decode(lconf, evaluations):
 
     fpath = minicorpus_path(lconf) + '.relations.sparse'
     vocab_path = lconf.mpack_paths(test_data=False)['vocab']
-    mpack = load_multipack(fpath + '.edu_input',
-                           fpath + '.pairings',
+    labels_path = lconf.mpack_paths(test_data=False)['labels']
+    mpack = load_multipack(fpath + '.edu_input', fpath + '.pairings',
                            fpath,
-                           vocab_path)
+                           vocab_path, labels_path,
+                           # WIP
+                           file_split='corpus')
     decoder_jobs = concat_i(_get_decoding_jobs(mpack, lconf, econf)
                             for econf in evaluations)
     Parallel(n_jobs=lconf.runcfg.n_jobs, verbose=True)(decoder_jobs)
