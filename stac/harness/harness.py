@@ -148,10 +148,6 @@ class IritHarness(Harness):
         # dialogue
         ext = 'relations.sparse'
         core_path = self._eval_data_path(ext, test_data=test_data)
-        # DEBUG
-        print(core_path)  # DEBUG
-        raise ValueError('debug in progress')
-        # end DEBUG
         return {
             # data files, might be one per corpus split or one per doc or
             # dialogue
