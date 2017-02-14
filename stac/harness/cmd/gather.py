@@ -87,17 +87,25 @@ def main(args):
         tdir = latest_tmp()
     else:
         tdir = current_tmp()
-        extract_features(TRAINING_CORPUS, tdir, strip_mode=args.strip_mode)
+
+    # 2016-09-01 put data files in {tdir}/data
+    tdir_data = os.path.join(tdir, 'data')
+    if not os.path.exists(tdir_data):
+        os.makedirs(tdir_data)
+
+    if not args.skip_training:
+        extract_features(TRAINING_CORPUS, tdir_data,
+                         strip_mode=args.strip_mode)
 
     if TEST_CORPUS is not None:
-        vocab_path = fp.join(tdir,
+        vocab_path = fp.join(tdir_data,
                              (fp.basename(TRAINING_CORPUS) +
                               '.relations.sparse.vocab'))
-        extract_features(TEST_CORPUS, tdir,
+        extract_features(TEST_CORPUS, tdir_data,
                          vocab_path=vocab_path,
                          strip_mode=args.strip_mode)
 
-    with open(os.path.join(tdir, "versions-gather.txt"), "w") as stream:
+    with open(os.path.join(tdir_data, "versions-gather.txt"), "w") as stream:
         call(["pip", "freeze"], stdout=stream)
 
     if not args.skip_training:
