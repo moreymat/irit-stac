@@ -38,7 +38,7 @@ def config_argparser(psr):
 
 
 def extract_features(corpus, output_dir,
-                     vocab_path=None, strip_mode=None):
+                     vocab_path=None, label_path=None, strip_mode=None):
     """Extract features for a corpus, dump the instances.
 
     Run feature extraction for a particular corpus; and store the
@@ -50,15 +50,21 @@ def extract_features(corpus, output_dir,
 
     Parameters
     ----------
-    corpus: filepath
+    corpus : filepath
         Selected corpus
-    output_dir: filepath
+
+    output_dir : filepath
         Folder where instances will be dumped
-    vocab_path: filepath
+
+    vocab_path : filepath
         Vocabulary to load for feature extraction (needed if extracting
         test data; must ensure we have the same vocab in test as we'd
         have in training)
-    strip_mode: one of {'head', 'broadcast', 'custom'}
+
+    label_path : filepath
+        Path to a file that describes the labelset.
+
+    strip_mode : one of {'head', 'broadcast', 'custom'}
         Method to strip CDUs
     """
     # TODO: perhaps we could just directly invoke the appropriate
@@ -70,6 +76,8 @@ def extract_features(corpus, output_dir,
            "--anno", ANNOTATORS]
     if vocab_path is not None:
         cmd.extend(['--vocabulary', vocab_path])
+    if label_path is not None:
+        cmd.extend(['--labels', label_path])
     if strip_mode is not None:
         cmd.extend(['--strip-mode', strip_mode])
     call(cmd)  # DEBUG
@@ -101,6 +109,9 @@ def main(args):
         vocab_path = fp.join(tdir_data,
                              (fp.basename(TRAINING_CORPUS) +
                               '.relations.sparse.vocab'))
+        label_path = fp.join(tdir_data,
+                             (fp.basename(TRAINING_CORPUS) +
+                              '.relations.labels'))
         extract_features(TEST_CORPUS, tdir_data,
                          vocab_path=vocab_path,
                          strip_mode=args.strip_mode)
