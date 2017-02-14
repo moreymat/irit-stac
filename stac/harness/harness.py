@@ -146,9 +146,16 @@ class IritHarness(Harness):
         # FIXME catch-up with the new API in educe and attelo
         # e.g. one group of files per corpus (split) vs per doc or
         # dialogue
-        ext = 'relations.sparse'
-        core_path = self._eval_data_path(ext, test_data=test_data)
-        return {
+        base = 'relations'
+        ext = base + '.sparse'
+        # path to data files in the evaluation dir
+        dset = self.testset if test_data else self.dataset
+        # * common files
+        vocab_path = fp.join(self.eval_dir, "%s.%s.vocab" % (dset, ext))
+        labels_path = fp.join(self.eval_dir, "%s.%s.labels" % (dset, base))
+        # * prefix common to data files
+        core_path = fp.join(self.eval_dir, "%s.%s" % (dset, ext))
+        res = {
             # data files, might be one per corpus split or one per doc or
             # dialogue
             # FIXME values should be lists
@@ -158,9 +165,10 @@ class IritHarness(Harness):
                                  else core_path),
             # "global" files: vocabulary, labels (unique to a corpus or
             # corpus split)
-            'vocab': core_path + '.vocab',
-            'labels': core_path + '.labels'  # FIXME probably
+            'vocab': vocab_path,
+            'labels': labels_path
         }
+        return res
 
     def model_paths(self, rconf, fold, parser):
         """Paths to the learner(s) model(s).
