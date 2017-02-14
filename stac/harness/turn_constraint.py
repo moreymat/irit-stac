@@ -84,7 +84,7 @@ class TC_LearnerWrapper(object):
         else:
             return None
 
-    def fit(self, dpacks, targets, nonfixed_pairs=None):
+    def fit(self, dpacks, targets):
         "apply the turn constraint before learning"
         tc_safe_pairs = [turn_constraint_safe(dpack) for dpack in dpacks]
         # restrict dpacks and targets to keep only tc safe edges
@@ -92,23 +92,18 @@ class TC_LearnerWrapper(object):
                   in zip(dpacks, tc_safe_pairs)]
         targets = [target[idxes] for target, idxes
                    in zip(targets, tc_safe_pairs)]
-        # get indices of nonfixed_pairs in tc_safe_pairs
-        if nonfixed_pairs is not None:
-            nonfixed_ix = [np.in1d(idxes, nf_pairs) for idxes, nf_pairs
-                           in zip(tc_safe_pairs, nonfixed_pairs)]
-            nonfixed_pairs = [np.where(nf_ix)[0] for nf_ix in nonfixed_ix]
-        self._learner.fit(dpacks, targets, nonfixed_pairs=nonfixed_pairs)
+        self._learner.fit(dpacks, targets)
         return self
 
-    def transform(self, dpack, nonfixed_pairs=None):
+    def transform(self, dpack):
         "pass through to inner learner"
         # no turn constraint here; we just wanted them for learning with
-        return self._learner.transform(dpack, nonfixed_pairs=nonfixed_pairs)
+        return self._learner.transform(dpack)
 
-    def predict_score(self, dpack, nonfixed_pairs=None):
+    def predict_score(self, dpack):
         "pass through to inner learner"
         # no turn constraint here; we just wanted them for learning with
-        return self._learner.predict_score(dpack, nonfixed_pairs=nonfixed_pairs)
+        return self._learner.predict_score(dpack)
 
 
 class TC_Pruner(Parser):
