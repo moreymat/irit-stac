@@ -66,8 +66,8 @@ SNAPSHOTS = 'data/SNAPSHOTS'
 """Results over time we are making a point of saving"""
 
 
-# TRAINING_CORPUS = 'data/FROZEN/training-2015-05-30'
-TRAINING_CORPUS = 'data/pilot_spect'
+TRAINING_CORPUS = 'data/FROZEN/training-2015-05-30'
+# TRAINING_CORPUS = 'data/pilot_spect'
 # TRAINING_CORPUS = 'data/tiny'
 """Corpora for use in building/training models and running our
 incremental experiments. Later on we should consider using the
@@ -81,8 +81,8 @@ is used in more than one corpus, but we can revisit this scheme as
 needed.
 """
 
-# TEST_CORPUS = 'data/FROZEN/test-2015-05-30'
-TEST_CORPUS = 'data/TEST_spect'
+TEST_CORPUS = 'data/FROZEN/test-2015-05-30'
+# TEST_CORPUS = 'data/TEST_spect'
 # TEST_CORPUS = None
 # TEST_CORPUS = 'tiny'
 """Corpora for use in FINAL testing.

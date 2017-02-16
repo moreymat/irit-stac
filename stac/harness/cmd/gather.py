@@ -80,8 +80,8 @@ def extract_features(corpus, output_dir,
         cmd.extend(['--labels', label_path])
     if strip_mode is not None:
         cmd.extend(['--strip-mode', strip_mode])
-    call(cmd)  # DEBUG
-    # call(cmd + ["--single"])  # DEBUG
+    call(cmd)
+    call(cmd + ["--single"])
 
 
 def main(args):
