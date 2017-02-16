@@ -121,14 +121,15 @@ def _unit_annotations(lconf, log):
     corpus_dir = minicorpus_path(lconf)
     d_model_path = dact_model_path(lconf, DIALOGUE_ACT_LEARNER)
     d_features_path = dact_features_path(lconf)
+    # 2017-02-16 separate file for labels
+    d_label_path = d_features_path.rsplit('.', 1)[0] + '.labels'  # DIRTY
     d_vocab_path = d_features_path + '.vocab'
-
     lconf.pyt("stac/unit_annotations.py",
               corpus_dir,
               lconf.abspath(LEX_DIR),
               "--model", d_model_path,
               "--vocab", d_vocab_path,
-              "--labels", d_features_path,
+              "--labels", d_label_path,
               "--output", corpus_dir,
               stderr=log)
 

@@ -177,7 +177,7 @@ def command_annotate(args):
     vocab = {f: i for i, f in
              enumerate(load_vocab(args.vocabulary))}
     labels = load_labels(args.labels)
-
+    labels = labels[1:]  # (0, __UNK__) was not explicitly stored before
     # add dialogue acts and addressees
     annotate_edus(model, vocab, labels, inputs)
 
@@ -202,7 +202,7 @@ def main():
     psr.add_argument("--vocabulary", default=None, required=True,
                      help="feature vocabulary")
     psr.add_argument("--labels", default=None, required=True,
-                     help="dialogue act labels file (features file)")
+                     help="dialogue act labels file")
     psr.add_argument("--output", "-o", metavar="DIR",
                      default=None,
                      required=True,
